@@ -4,16 +4,17 @@
 {% block titulo %}Noticia{% endblock titulo %}
  
 {% block contenido %}
-    <h2>Mi noticia detallada</h2>
-
-    {% if user.is_authenticated and noticia.author == user or user.is_staff or user.is_superuser %}
+     <h2>Mi noticia detallada</h2>
+    {% if user.is_authenticated and noticia.author == user %}
         <a href="{% url 'noticias:edit_noticia' pk=noticia.pk %}">Editar</a>
+
 
         <form method="POST" action="{% url 'noticias:detalle' pk=noticia.pk %}">
             {% csrf_token %}
             <button type="submit" name="delete_noticia">BORRAR</button>
         </form>
     {% endif %}
+
     
     <img src="{{noticia.imagen.url}}" width="50%">
     <p>TITULO: {{noticia.titulo}}</p>
@@ -30,12 +31,14 @@
             {% csrf_token %}
             {% if comment.author == user.username %}
                 <button type="submit">Borrar comentario</button>
+                <a href="{% url 'noticias:edit_comment' comment_id=comment.id %}">Editar comentario</a>
             {% endif %}
         </form>
         <hr>
     {% empty %}
         <p>No hay comentarios.</p>
     {% endfor %}
+
 
 
     {% if user.is_authenticated %}
@@ -49,7 +52,19 @@
         <p>Debe iniciar sesión para añadir un comentario</p>
         <a href="{% url 'login' %}">LOGIN</a>
     {% endif %}
-       
+    
+    <h2>Aca estan mis noticias</h2>
+    <div class="submenu">
+        <a href="{% url 'noticias:listar' %}">TODAS</a>
+        {% for cat in categorias %}
+            <a href="?categoria={{ cat.pk }}">{{ cat.nombre }}</a>
+        {% endfor %}
+        <a href="?antiguedad_asc=1">Más antiguas primero</a>
+        <a href="?antiguedad_desc=1">Más recientes primero</a>
+        <a href="?orden_asc=1">Orden alfabético ascendente</a>
+        <a href="?orden_desc=1">Orden alfabético descendente</a>
+    </div>
+
 
     <br><br>
     <a href="{% url 'noticias:listar' %}">VOLVER</a>
